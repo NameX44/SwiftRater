@@ -11,7 +11,6 @@ import UIKit
 let SwiftRaterInvalid = -1
 
 class UsageDataManager {
-
     var daysUntilPrompt: Int = SwiftRaterInvalid
     var usesUntilPrompt: Int = SwiftRaterInvalid
     var significantUsesUntilPrompt: Int = SwiftRaterInvalid
@@ -20,6 +19,7 @@ class UsageDataManager {
     var showLaterButton: Bool = true
     var debugMode: Bool = false
 
+    static private let keySwiftRaterAppID = "keySwiftRaterAppID"
     static private let keySwiftRaterFirstUseDate = "keySwiftRaterFirstUseDate"
     static private let keySwiftRaterUseCount = "keySwiftRaterUseCount"
     static private let keySwiftRaterSignificantEventCount = "keySwiftRaterSignificantEventCount"
@@ -38,7 +38,7 @@ class UsageDataManager {
             UsageDataManager.keySwiftRaterSignificantEventCount: 0,
             UsageDataManager.keySwiftRaterRateDone: false,
             UsageDataManager.keySwiftRaterTrackingVersion: "",
-            UsageDataManager.keySwiftRaterReminderRequestDate: 0
+            UsageDataManager.keySwiftRaterAppID: ""
             ] as [String : Any]
         let ud = UserDefaults.standard
         ud.register(defaults: defaults)
@@ -50,6 +50,16 @@ class UsageDataManager {
         }
         set {
             userDefaults.set(newValue, forKey: UsageDataManager.keySwiftRaterRateDone)
+            userDefaults.synchronize()
+        }
+    }
+
+    var appID: String {
+        get {
+            return userDefaults.string(forKey: UsageDataManager.keySwiftRaterAppID) ?? ""
+        }
+        set {
+            userDefaults.set(newValue, forKey: UsageDataManager.keySwiftRaterAppID)
             userDefaults.synchronize()
         }
     }

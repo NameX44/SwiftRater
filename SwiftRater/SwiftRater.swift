@@ -81,8 +81,14 @@ import StoreKit
         return UsageDataManager.shared.isRateDone
     }
     
-    fileprivate var appID: Int?
-
+    @objc public static var appID: String {
+        get {
+            return UsageDataManager.shared.appID
+        }
+        set {
+            UsageDataManager.shared.appID = newValue
+        }
+    }
     private static var appVersion: String {
         get {
             return Bundle.main.infoDictionary!["CFBundleShortVersionString"] as? String ?? "0.0.0"
@@ -222,12 +228,11 @@ import StoreKit
             return
         }
 
-        guard let appID = allResults.first?["trackId"] as? Int else {
+        guard let trackId = allResults.first?["trackId"] as? Int else {
             postError(.appStoreAppIDFailure, underlyingError: nil)
             return
         }
-
-        self.appID = appID
+        assert("\(trackId)" == SwiftRater.appID)
     }
 
     private func iTunesURLFromString() throws -> URL {
@@ -236,7 +241,7 @@ import StoreKit
         components.host = "itunes.apple.com"
         components.path = "/lookup"
 
-        let items: [URLQueryItem] = [URLQueryItem(name: "bundleId", value: Bundle.bundleID())]
+        let items: [URLQueryItem] = [URLQueryItem(name: "id", value: "\(SwiftRater.appID)")]
 
         components.queryItems = items
 
@@ -324,8 +329,8 @@ import StoreKit
         #if arch(i386) || arch(x86_64)
             print("APPIRATER NOTE: iTunes App Store is not supported on the iOS simulator. Unable to open App Store page.");
         #else
-            guard let appId = self.appID else { return }
-            let reviewURL = "itms-apps://itunes.apple.com/app/id\(appId)?action=write-review";
+            //guard let appId = self.appID else { return }
+            let reviewURL = "itms-apps://itunes.apple.com/app/id\(SwiftRater.appID)?action=write-review";
             guard let url = URL(string: reviewURL) else { return }
             UIApplication.shared.openURL(url)
         #endif
